@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CanWeFixIt.Data.Models;
 using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 
 namespace CanWeFixIt.Data.Services
 {
@@ -16,12 +18,24 @@ namespace CanWeFixIt.Data.Services
         const string connectionString = "Data Source=DatabaseService;Mode=Memory;Cache=Shared";
         private SqliteConnection _connection;
 
-        public DatabaseService()
+        private readonly ILogger<DatabaseService> _logger;
+
+        public DatabaseService(ILogger<DatabaseService> logger)
         {
-            // The in-memory database only persists while a connection is open to it. To manage
-            // its lifetime, keep one open connection around for as long as you need it.
-            _connection = new SqliteConnection(connectionString);
-            _connection.Open();
+            _logger = logger;
+
+            try
+            {
+                // The in-memory database only persists while a connection is open to it. To manage
+                // its lifetime, keep one open connection around for as long as you need it.
+                _connection = new SqliteConnection(connectionString);
+                _connection.Open();
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical($"Error during SQL connection setup:{Environment.NewLine}{e.Message}");
+                throw;
+            }
         }
         
         public async Task<IEnumerable<Instrument>> GetInstrumentsAsync(bool? active = null)
@@ -57,7 +71,9 @@ namespace CanWeFixIt.Data.Services
         /// </summary>
         public void SetupDatabase()
         {
-            const string createInstruments = @"
+            try
+            {
+                const string createInstruments = @"
                 CREATE TABLE instrument
                 (
                     id     int,
@@ -76,9 +92,9 @@ namespace CanWeFixIt.Data.Services
                        (8, 'Sedol8', 'Name8', 1),
                        (9, 'Sedol9', 'Name9', 0)";
 
-            _connection.Execute(createInstruments);
-            
-            const string createMarketData = @"
+                _connection.Execute(createInstruments);
+
+                const string createMarketData = @"
                 CREATE TABLE marketdata
                 (
                     id        int,
@@ -94,7 +110,13 @@ namespace CanWeFixIt.Data.Services
                        (5, 5555, 'Sedol5', 0),
                        (6, 6666, 'Sedol6', 1)";
 
-            _connection.Execute(createMarketData);
+                _connection.Execute(createMarketData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical($"Error during data setup:{Environment.NewLine}{e.Message}");
+                throw;
+            }
         }
     }
 }
