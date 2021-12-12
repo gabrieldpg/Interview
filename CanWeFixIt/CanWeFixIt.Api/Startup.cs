@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using CanWeFixIt.Api.Services.Interfaces;
 using CanWeFixIt.Api.Services;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace CanWeFixIt.Api
 {
@@ -43,25 +45,37 @@ namespace CanWeFixIt.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
-            var appSettings = _configuration.GetSection($"{Config.CANWEFIXIT_PREFIX}:{Config.APPLICATION_SETTINGS_SECTION}").Get<ApplicationSettings>();
+            ILogger<Startup> logger = serviceProvider.GetService<ILogger<Startup>>();
 
-            if (env.IsDevelopment())
+            try
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{appSettings.Version}/swagger.json", $"{appSettings.Name} {appSettings.Version}"));
-            }
+                var appSettings = _configuration.GetSection($"{Config.CANWEFIXIT_PREFIX}:{Config.APPLICATION_SETTINGS_SECTION}").Get<ApplicationSettings>();
 
-            // Populate in-memory database with data
-            var database = app.ApplicationServices.GetService(typeof(IDatabaseService)) as IDatabaseService;
-            database?.SetupDatabase();
-            
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                    app.UseSwagger();
+                    app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{appSettings.Version}/swagger.json", $"{appSettings.Name} {appSettings.Version}"));
+                }
+
+                // Populate in-memory database with data
+                var database = app.ApplicationServices.GetService(typeof(IDatabaseService)) as IDatabaseService;
+                database?.SetupDatabase();
+
+                app.UseHttpsRedirection();
+                app.UseRouting();
+                app.UseAuthorization();
+                app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            }
+            catch (Exception e)
+            {
+                Exception baseEx = e.GetBaseException();
+                logger.LogCritical($"Error during configuration of HTTP request pipeline:{Environment.NewLine}{baseEx.Message}");
+
+                throw;
+            }
         }
     }
 }

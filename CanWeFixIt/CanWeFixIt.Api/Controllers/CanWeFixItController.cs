@@ -1,6 +1,7 @@
 ﻿using CanWeFixIt.Api.Services.Interfaces;
 using CanWeFixIt.Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,14 +16,18 @@ namespace CanWeFixIt.Api.Controllers
         private readonly IMarketDataService _marketDataService;
         private readonly IValuationService _valuationService;
 
+        private readonly ILogger<CanWeFixItController> _logger;
+
         public CanWeFixItController(
             IInstrumentService instrumentService,
             IMarketDataService marketDataService,
-            IValuationService valuationService)
+            IValuationService valuationService,
+            ILogger<CanWeFixItController> logger)
         {
             _instrumentService = instrumentService;
             _marketDataService = marketDataService;
             _valuationService = valuationService;
+            _logger = logger;
         }
 
         // GET Instruments
@@ -36,6 +41,8 @@ namespace CanWeFixIt.Api.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError($"Error retrieving Instruments. {e.Message}", e);
+
                 return BadRequest(); // Implement some sort of error handling
             }
         }
@@ -51,6 +58,8 @@ namespace CanWeFixIt.Api.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError($"Error retrieving Market Data. {e.Message}", e);
+
                 return BadRequest(); // Implement some sort of error handling
             }
         }
@@ -66,6 +75,8 @@ namespace CanWeFixIt.Api.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError($"Error retrieving Valuations. {e.Message}", e);
+
                 return BadRequest(); // Implement some sort of error handling
             }
         }
