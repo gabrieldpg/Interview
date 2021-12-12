@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CanWeFixIt.Data.Models;
+using CanWeFixIt.Data.Services.Interfaces;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ namespace CanWeFixIt.Data.Services
         {
             var query = $"SELECT * FROM Instrument WHERE Sedol = '{sedol}'";
             if (active != null)
-                query += $" WHERE Active = {active}";
+                query += $" AND Active = {active}";
 
             return await _connection.QueryAsync<Instrument>(query);
         }

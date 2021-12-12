@@ -1,25 +1,37 @@
 ﻿using CanWeFixIt.Api.Services.Interfaces;
 using CanWeFixIt.Data.Models;
-using CanWeFixIt.Data.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
+using CanWeFixIt.Data.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CanWeFixIt.Api.Services
 {
-    public class MarketDataService : IMarketDataService
+    public class CanWeFixItService : ICanWeFixItService
     {
         private readonly IDatabaseService _datatase;
-        private readonly ILogger<MarketDataService> _logger;
+        private readonly ILogger<CanWeFixItService> _logger;
 
-        public MarketDataService(
+        public CanWeFixItService(
             IDatabaseService database,
-            ILogger<MarketDataService> logger)
+            ILogger<CanWeFixItService> logger)
         {
             _datatase = database;
             _logger = logger;
         }
+
+        public async Task<IEnumerable<Instrument>> GetInstrumentsAsync(bool? active = null)
+        {
+            _logger.LogInformation($"Executing service: '{GetType().Name}.{nameof(GetInstrumentsAsync)}'. Param active = '{active}'");
+
+            var instruments = await _datatase.GetInstrumentsAsync(active);
+
+            _logger.LogInformation($"Exiting service: '{GetType().Name}.{nameof(GetInstrumentsAsync)}'");
+
+            return instruments;
+        }
+
         public async Task<IEnumerable<MarketDataDto>> GetMarketDataAsync(bool? active = null)
         {
             _logger.LogInformation($"Executing service: '{GetType().Name}.{nameof(GetMarketDataAsync)}'. Param active = '{active}'");
@@ -52,6 +64,24 @@ namespace CanWeFixIt.Api.Services
             _logger.LogInformation($"Exiting service: '{GetType().Name}.{nameof(GetMarketDataAsync)}'");
 
             return marketDataDtoList;
+        }
+        public async Task<IEnumerable<MarketValuation>> GetMarketValuationsAsync(bool? active = null)
+        {
+            _logger.LogInformation($"Executing service: '{GetType().Name}.{nameof(GetMarketValuationsAsync)}'. Param active = '{active}'");
+
+            var marketDataList = await _datatase.GetMarketDataAsync(active);
+
+            var marketValuationList = new List<MarketValuation>()
+            {
+                new MarketValuation()
+                {
+                    Total = marketDataList.Any() ? marketDataList.Sum(x => x.DataValue) : 0
+                }
+            };
+
+            _logger.LogInformation($"Exiting service: '{GetType().Name}.{nameof(GetMarketValuationsAsync)}'");
+
+            return marketValuationList;
         }
     }
 }

@@ -12,21 +12,14 @@ namespace CanWeFixIt.Api.Controllers
     [Route("v1")]
     public class CanWeFixItController : ControllerBase
     {
-        private readonly IInstrumentService _instrumentService;
-        private readonly IMarketDataService _marketDataService;
-        private readonly IValuationService _valuationService;
-
+        private readonly ICanWeFixItService _service;
         private readonly ILogger<CanWeFixItController> _logger;
 
         public CanWeFixItController(
-            IInstrumentService instrumentService,
-            IMarketDataService marketDataService,
-            IValuationService valuationService,
+            ICanWeFixItService service,
             ILogger<CanWeFixItController> logger)
         {
-            _instrumentService = instrumentService;
-            _marketDataService = marketDataService;
-            _valuationService = valuationService;
+            _service = service;
             _logger = logger;
         }
 
@@ -36,14 +29,15 @@ namespace CanWeFixIt.Api.Controllers
         {
             try
             {
-                var instruments = await _instrumentService.GetInstrumentsAsync(true);
+                var instruments = await _service.GetInstrumentsAsync(true);
                 return Ok(instruments);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error retrieving Instruments. {e.Message}", e);
+                var errorMessage = $"Error retrieving Instruments. {e.Message}";
+                _logger.LogError(errorMessage);
 
-                return BadRequest(); // Implement some sort of error handling
+                return BadRequest(errorMessage);
             }
         }
 
@@ -53,14 +47,15 @@ namespace CanWeFixIt.Api.Controllers
         {
             try
             {
-                var marketData = await _marketDataService.GetMarketDataAsync(true);
+                var marketData = await _service.GetMarketDataAsync(true);
                 return Ok(marketData);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error retrieving Market Data. {e.Message}", e);
+                var errorMessage = $"Error retrieving Market Data. {e.Message}";
+                _logger.LogError(errorMessage);
 
-                return BadRequest(); // Implement some sort of error handling
+                return BadRequest(errorMessage);
             }
         }
 
@@ -70,14 +65,15 @@ namespace CanWeFixIt.Api.Controllers
         {
             try
             {
-                var marketValuation = await _valuationService.GetMarketValuationsAsync(true);
+                var marketValuation = await _service.GetMarketValuationsAsync(true);
                 return Ok(marketValuation);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error retrieving Valuations. {e.Message}", e);
+                var errorMessage = $"Error retrieving Valuations. {e.Message}";
+                _logger.LogError(errorMessage);
 
-                return BadRequest(); // Implement some sort of error handling
+                return BadRequest(errorMessage);
             }
         }
     }

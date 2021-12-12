@@ -11,6 +11,7 @@ using CanWeFixIt.Api.Services.Interfaces;
 using CanWeFixIt.Api.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using CanWeFixIt.Data.Services.Interfaces;
 
 namespace CanWeFixIt.Api
 {
@@ -39,9 +40,7 @@ namespace CanWeFixIt.Api
             });
 
             services.AddSingleton<IDatabaseService, DatabaseService>();
-            services.AddTransient<IInstrumentService, InstrumentService>();
-            services.AddTransient<IMarketDataService, MarketDataService>();
-            services.AddTransient<IValuationService, ValuationService>();
+            services.AddTransient<ICanWeFixItService, CanWeFixItService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
