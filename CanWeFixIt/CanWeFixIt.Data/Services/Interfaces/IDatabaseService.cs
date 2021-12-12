@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CanWeFixIt.Data.Services
+namespace CanWeFixIt.Data.Services.Interfaces
 {
     public interface IDatabaseService
     {
