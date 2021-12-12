@@ -48,11 +48,9 @@ namespace CanWeFixIt.Data.Services
             return await _connection.QueryAsync<Instrument>(query);
         }
 
-        public async Task<IEnumerable<Instrument>> GetInstrumentsBySedolAsync(string sedol, bool? active = null)
+        public async Task<IEnumerable<Instrument>> GetInstrumentsBySedolAsync(string sedol)
         {
             var query = $"SELECT * FROM Instrument WHERE Sedol = '{sedol}'";
-            if (active != null)
-                query += $" AND Active = {active}";
 
             return await _connection.QueryAsync<Instrument>(query);
         }
