@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanWeFixIt.Api", "CanWeFixItApi\CanWeFixIt.Api.csproj", "{F5BE51F2-A6FD-4147-824E-7A2E3DD6984D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanWeFixIt.Api", "CanWeFixIt.Api\CanWeFixIt.Api.csproj", "{F5BE51F2-A6FD-4147-824E-7A2E3DD6984D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanWeFixIt.Data", "CanWeFixItService\CanWeFixIt.Data.csproj", "{BB862D26-613C-4D09-A150-92F1D82AA77F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CanWeFixIt.Data", "CanWeFixIt.Data\CanWeFixIt.Data.csproj", "{BB862D26-613C-4D09-A150-92F1D82AA77F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
